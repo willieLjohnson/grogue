@@ -24,6 +24,10 @@ type MapTile struct {
 	Image   *ebiten.Image
 }
 
+func (level *Level) DrawLevel(screen *ebiten.Image) {
+	level.DrawMap(screen)
+}
+
 func (level *Level) GetIndexFromXY(x int, y int) int {
 	return (y * NewGameData().ScreenWidth) + x
 }
@@ -64,4 +68,16 @@ func (level *Level) CreateTiles() []MapTile {
 	}
 
 	return tiles
+}
+
+func (level *Level) DrawMap(screen *ebiten.Image) {
+	gd := NewGameData()
+	for x := 0; x < gd.ScreenWidth; x++ {
+		for y := 0; y < gd.ScreenHeight; y++ {
+			tile := level.Tiles[level.GetIndexFromXY(x, y)]
+			opts := &ebiten.DrawImageOptions{}
+			opts.GeoM.Translate(float64(tile.PixelX), float64(tile.PixelY))
+			screen.DrawImage(tile.Image, opts)
+		}
+	}
 }
