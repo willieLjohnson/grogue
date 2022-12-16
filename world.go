@@ -2,35 +2,40 @@ package main
 
 import (
 	"github.com/bytearena/ecs"
-  "log"
-  "github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"log"
 )
 
 var position *ecs.Component
 var renderable *ecs.Component
 
-func InitWorld() (*ecs.Manager, map[string]ecs.Tag) {
+func InitWorld(startingLevel Level) (*ecs.Manager, map[string]ecs.Tag) {
 	tags := make(map[string]ecs.Tag)
 	manager := ecs.NewManager()
+
+	startingRoom := startingLevel.Rooms[0]
+	x, y := startingRoom.Center()
 
 	player := manager.NewComponent()
 	position = manager.NewComponent()
 	renderable = manager.NewComponent()
 	movable := manager.NewComponent()
 
-  playerImg, _, err := ebitenutil.NewImageFromFile("assets/player.png")
-  if err != nil { log.Fatal(err) }
+	playerImg, _, err := ebitenutil.NewImageFromFile("assets/player.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 	manager.NewEntity().
 		AddComponent(player, Player{}).
-    AddComponent(renderable, &Renderable{ Image: playerImg }).
+		AddComponent(renderable, &Renderable{Image: playerImg}).
 		AddComponent(movable, Movable{}).
 		AddComponent(position, &Position{
-			X: 40,
-			Y: 25,
+			X: x,
+			Y: y,
 		})
 	players := ecs.BuildTag(player, position)
 	tags["players"] = players
-  renderables := ecs.BuildTag(renderable, position)
-  tags["renderables"] = renderables
+	renderables := ecs.BuildTag(renderable, position)
+	tags["renderables"] = renderables
 	return manager, tags
 }
