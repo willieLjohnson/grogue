@@ -23,14 +23,14 @@ func NewGame() *Game {
 }
 
 func (g *Game) Update() error {
-  TryMovePlayer(g)
+	TryMovePlayer(g)
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	level := g.Map.Dungeons[0].Levels[0]
+	level := g.Map.CurrentLevel
 	level.DrawLevel(screen)
-  ProcessRenderables(g, level, screen)
+	ProcessRenderables(g, level, screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {
