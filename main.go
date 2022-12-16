@@ -1,18 +1,24 @@
 package main
 
 import (
+	"github.com/bytearena/ecs"
 	"github.com/hajimehoshi/ebiten/v2"
 	_ "image/png"
 	"log"
 )
 
 type Game struct {
-	Map GameMap
+	Map       GameMap
+	World     *ecs.Manager
+	WorldTags map[string]ecs.Tag
 }
 
 func NewGame() *Game {
 	g := &Game{}
+	world, tags := InitWorld()
 	g.Map = NewGameMap()
+	g.WorldTags = tags
+	g.World = world
 	return g
 }
 
@@ -23,6 +29,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	level := g.Map.Dungeons[0].Levels[0]
 	level.DrawLevel(screen)
+  ProcessRenderables(g, level, screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {
