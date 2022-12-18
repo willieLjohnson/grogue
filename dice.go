@@ -25,3 +25,17 @@ func GetRandomBetween(low int, high int) int {
 	}
 	return randy
 }
+
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
+
+func min(x, y int) int {
+	if x > y {
+		return y
+	}
+	return x
+}

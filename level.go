@@ -40,6 +40,37 @@ func (level *Level) CreateRoom(rect Rect) {
 	}
 }
 
+func (level *Level) CreateHorizontalTunnel(x1, x2, y int) {
+	gd := NewGameData()
+	for x := min(x1, x2); x < max(x1, x2)+1; x++ {
+		index := level.GetIndexFromXY(x, y)
+		if index > 0 && index < gd.ScreenWidth*gd.ScreenHeight {
+			level.Tiles[index].Blocked = false
+			floor, _, err := ebitenutil.NewImageFromFile("assets/floor.png")
+			if err != nil {
+				log.Fatal(err)
+			}
+			level.Tiles[index].Image = floor
+		}
+	}
+}
+
+func (level *Level) CreateVerticalTunnel(y1, y2, x int) {
+	gd := NewGameData()
+	for y := min(y1, y2); y < max(y1, y2)+1; y++ {
+		index := level.GetIndexFromXY(x, y)
+
+		if index > 0 && index < gd.ScreenWidth*gd.ScreenHeight {
+			level.Tiles[index].Blocked = false
+			floor, _, err := ebitenutil.NewImageFromFile("assets/floor.png")
+			if err != nil {
+				log.Fatal(err)
+			}
+			level.Tiles[index].Image = floor
+		}
+	}
+}
+
 func (level *Level) GenerateLevelTiles() {
 	MIN_SIZE := 6
 	MAX_SIZE := 10
@@ -48,12 +79,13 @@ func (level *Level) GenerateLevelTiles() {
 	gd := NewGameData()
 	tiles := level.CreateTiles()
 	level.Tiles = tiles
+	containsRooms := false
 
 	for idx := 0; idx < MAX_ROOMS; idx++ {
 		w := GetRandomBetween(MIN_SIZE, MAX_SIZE)
 		h := GetRandomBetween(MIN_SIZE, MAX_SIZE)
-		x := GetDiceRoll(gd.ScreenWidth-w-1) - 1
-		y := GetDiceRoll(gd.ScreenHeight-h-1) - 1
+		x := GetDiceRoll(gd.ScreenWidth - w - 1)
+		y := GetDiceRoll(gd.ScreenHeight - h - 1)
 
 		newRoom := NewRect(x, y, w, h)
 		okToAdd := true
@@ -65,7 +97,22 @@ func (level *Level) GenerateLevelTiles() {
 		}
 		if okToAdd {
 			level.CreateRoom(newRoom)
+			if containsRooms {
+				newX, newY := newRoom.Center()
+				prevX, prevY := level.Rooms[len(level.Rooms)-1].Center()
+
+				coinflip := GetDiceRoll(2)
+
+				if coinflip == 2 {
+					level.CreateHorizontalTunnel(prevX, newX, prevY)
+					level.CreateVerticalTunnel(prevY, newY, newX)
+				} else {
+					level.CreateHorizontalTunnel(prevX, newX, newY)
+					level.CreateVerticalTunnel(prevY, newY, prevX)
+				}
+			}
 			level.Rooms = append(level.Rooms, newRoom)
+			containsRooms = true
 		}
 	}
 }
