@@ -1,5 +1,6 @@
 package main
 
+//GameData holds the values for the size of elements within the game
 type GameData struct {
 	ScreenWidth  int
 	ScreenHeight int
@@ -7,12 +8,14 @@ type GameData struct {
 	TileHeight   int
 }
 
+//NewGameData creates a fully populated GameData Struct.
 func NewGameData() GameData {
-	gd := GameData{
-		ScreenHeight: 50,
+	g := GameData{
 		ScreenWidth:  80,
+		ScreenHeight: 50,
 		TileWidth:    16,
 		TileHeight:   16,
 	}
-	return gd
+
+	return g
 }

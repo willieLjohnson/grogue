@@ -19,7 +19,9 @@ func NewRect(x int, y int, width int, height int) Rect {
 func (r *Rect) Center() (int, int) {
 	centerX := (r.X1 + r.X2) / 2
 	centerY := (r.Y1 + r.Y2) / 2
+
 	return centerX, centerY
+
 }
 
 func (r *Rect) Intersect(other Rect) bool {
